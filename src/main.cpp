@@ -1,17 +1,26 @@
 #include <Arduino.h>
 #include <WiFi.h>
 #include "esp_wifi.h"
-#include <WebServer.h>
 #include "SPIFFS.h"
+#include <ArduinoJson.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 
 #define ssid "ESP"
 
-WebServer server(80);
+AsyncWebServer server(80);
+AsyncEventSource events("/events");
 
 // put function declarations here:
 void printConnectedDevices();
 void startAccessPoint();
 void setupWebPages();
+String getValuesJSON();
+void sendReadingEvent();
+
+StaticJsonDocument<256> readings;
+int AN_In1 = 36; // GPIO 36 is Now AN Input 1
+int AN_In2 = 39; // GPIO 39 is Now AN Input 2
 
 void setup()
 {
@@ -29,18 +38,18 @@ void setup()
   Serial.println("HTTP server started");
 }
 
-static unsigned long lastTime = millis();
-static unsigned long interval = 5000;
-
 void loop()
 {
-  server.handleClient();
-
-  // Print connected devices every 5 seconds
-  if (millis() - lastTime > interval)
+  if (millis() % 100 == 0)
   {
-    lastTime = millis();
     // printConnectedDevices();
+    // int AN_In1_Value = analogRead(AN_In1);
+    // int AN_In2_Value = analogRead(AN_In2);
+    // Serial.print("AN1: ");
+    // Serial.print(AN_In1_Value);
+    // Serial.print(" AN2: ");
+    // Serial.println(AN_In2_Value);
+    sendReadingEvent();
   }
 }
 
@@ -48,6 +57,18 @@ void startAccessPoint()
 {
   WiFi.softAP(ssid); // Start Access Point
   Serial.println("Access Point Mode");
+}
+
+// Send values to web page
+String getValuesJSON()
+{
+  // Return values in JSON
+  readings["AN_In1"] = analogRead(AN_In1);
+  readings["AN_In2"] = analogRead(AN_In2);
+
+  String values;
+  serializeJson(readings, values);
+  return values;
 }
 
 // Print all connected devices
@@ -81,10 +102,27 @@ void printConnectedDevices()
 void setupWebPages()
 {
   server.serveStatic("/", SPIFFS, "/");
-  
-  // Redirect to index page
-  server.onNotFound ([]() {
-    server.sendHeader("Location", String("/index.html"), true);
-    server.send(302, "text/plain", "");
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/index.html", "text/html");
   });
+
+  server.onNotFound([](AsyncWebServerRequest *request) {
+    request->send(404, "text/plain", "Not found");
+  });
+
+  events.onConnect([](AsyncEventSourceClient *client) {
+    if (client->lastId())
+    {
+      Serial.printf("Client reconnected! Last message ID that it got is: %u\n", client->lastId());
+    }
+    client->send("hello", NULL, millis(), 1000);
+  });
+
+  server.addHandler(&events); 
+}
+
+void sendReadingEvent()
+{
+  events.send(getValuesJSON().c_str(), "newReadings", millis());
 }
