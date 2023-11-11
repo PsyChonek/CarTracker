@@ -3,6 +3,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <head>
 	<title>LapTracker</title>
 </head>
@@ -257,18 +258,44 @@
 		insertLap("right");
 	});
 
-	var newLap = function (lapSide) {
+	var newLap = function (lapSide, type) {
 		var lap = document.createElement("tr");
 		var lapNumber = document.createElement("td");
 		var lapTime = document.createElement("td");
 
 		var lapCounter = lapSide === "left" ? lapsLeft : lapsRight;
+		if (type === "fastest") {
+			// Get lowest diff between laps
+			var lowestTime = lapCounter[0];
+			for (var i = 1; i < lapCounter.length; i++) {
+				var diff = Number(lapCounter[i])- Number(lapCounter[i - 1]);
+				if (diff < lowestTime) {
+					lowestTime = diff;
+				}
+			}
+
+			console.log("lowestTime", lowestTime)
+			console.log("lapCounter", lapCounter)
+
+			lapNumber.innerHTML = "Fastest";
+			lapTime.innerHTML = timeFormat(lowestTime);
+			
+			lap.style.backgroundColor = "#00ff00";
+			lap.style.color = "#000";
+
+			lap.appendChild(lapNumber);
+			lap.appendChild(lapTime);
+
+			return lap;
+		}
 
 		lapNumber.innerHTML = lapCounter.length + 1;
 		lapTime.innerHTML = timeFormat(timer);
+		lapCounter.push(timer)
 
 		lap.appendChild(lapNumber);
 		lap.appendChild(lapTime);
+
 
 		if (lapCounter.length % 2 == 0) {
 			// Light gray
@@ -276,7 +303,7 @@
 			lap.style.color = "#000";
 		}
 
-		if (Number(lapsCountInput.value) == lapCounter.length + 1) {
+		if (Number(lapsCountInput.value) == lapCounter.length) {
 			lap.style.backgroundColor = "#ff0000";
 			lap.style.color = "#fff";
 		}
@@ -287,15 +314,13 @@
 	var insertLap = function (lapSide) {
 		var lapCounter = lapSide === "left" ? lapsLeft : lapsRight;
 		var lapDiv = lapSide === "left" ? lapsLeftDiv : lapsRightDiv;
-		console.log("Cou, div", lapCounter, lapDiv)
-		if (Number(lapsCountInput.value) == lapCounter.length) {
+
+		if (Number(lapsCountInput.value) <= lapCounter.length) {
 			return;
 		}
+		lapDiv.appendChild(newLap(lapSide));
 
-		lapCounter.push(newLap(lapSide));
-		lapDiv.appendChild(lapCounter[lapCounter.length - 1]);
-
-		if (Number(lapsCountInput.value) == lapCounter.length) {
+		if (Number(lapsCountInput.value) <= lapCounter.length) {
 			if (!isWinner) {
 				console.log("LAPS SIDE:", lapSide)
 				var winnerName = lapSide === "left" ? leftName.value : rightName.value;
@@ -306,6 +331,7 @@
 			else {
 				isPaused = true;
 			}
+			lapDiv.appendChild(newLap(lapSide, "fastest"));
 		}
 	};
 
