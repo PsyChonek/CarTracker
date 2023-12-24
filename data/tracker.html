@@ -3,477 +3,68 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css" />
 
 <head>
 	<title>LapTracker</title>
 </head>
 
 <body>
-	<div name="flexBox">
-		<div name="flexMiddle">
-			<div name="middleTop">
+	<div class="horizontalBox">
+		<di class="verticalBox">
+			<div class="top">
 				<h1>🚗 LapTracker</h1>
-			</div>
-			<div name="middleMid">
-				<h1 name="winner">Right</h1>
-				<h1 name="countdown">5555</h1>
-				<p name="currentTime"><span name="currentTime">00:00:000</span></p>
-				<div class="trackerContainer">
-					<div class="trackerContainerLaps">
-						<input name="nameLeft" class="name" value="Left">
-						<div name="carLeft" class="tracker">
-							<table>
-								<thead>
-									<tr>
-										<th>Lap</th>
-										<th>Time</th>
-									</tr>
-								</thead>
-								<tbody name="lapsLeft"></tbody>
-							</table>
-						</div>
-					</div>
-					<div class="trackerContainerLaps">
-						<input name="nameRight" class="name" value="Right">
-						<div name="carRight" class="tracker">
-							<table>
-								<thead>
-									<tr>
-										<th>Lap</th>
-										<th>Time</th>
-									</tr>
-								</thead>
-								<tbody name="lapsRight"></tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div name="middleBot">
 				<div>
-					<div name="settings">
-						<label for="lapsCount">Laps count</label>
-						<input type="number" name="lapsCount" placeholder="Laps count" value="3" />
-						<label for="calibrateOffset">Calibrate offset</label>
-						<input type="number" name="calibrateOffset" value="100" placeholder="Calibrate offset" />
-						<label for="calibrateEmptyMin">Calibrate empty min</label>
-						<input type="number" name="calibrateEmptyMin" placeholder="Calibrate empty min" />
-						<label for="calibrateEmptyMax">Calibrate empty max</label>
-						<input type="number" name="calibrateEmptyMax" placeholder="Calibrate empty max" />
+					<input type="radio" id="players" name="players" value="1" checked>
+					<label for="players">1 Player</label><br>
+					<input type="radio" id="players" name="players" value="2">
+					<label for="players">2 Players</label><br>
+				</div>
+			</div>
+			<div class="middle">
+				<div class="player" id="player1">
+					<div class="playerName">
+						<input class="playerNameInput" type="text" id="player1Name" name="player1Name" value="Player 1">
 					</div>
-					<div name="buttons">
-						<button name="startButton">Start</button>
-						<button name="start5Button">Start 5s</button>
-						<button name="stopButton">Stop</button>
-						<button name="resetButton">Reset</button>
-						<button name="calibrateEmptyButton">Calibrate empty</button>
-						<button name="newLapButton">New lap</button>
+					<div class="playerButtons">
+						<select class="playerPlayTypeSelect" id="player1PlayType">
+							<option class="option" value="1">Kvalifikace čas</option>
+							<option class="option" value="2">Kvalifikace kola</option>
+							<option class="option" value="3">Závod kola</option>
+						</select>
+					</div>
+					<div class="playerMain" id="player1MainOption1">
+						<div class="playerMainOptions">
+							<input class="playerMainInput" type="text" id="player1MainOption1Input" name="player1MainOption1Input" value="00:00:00">
+						</div>
+						<div>
+							<button class="playerMainButton" id="player1MainOption1Button">Start</button>
+							<button class="playerMainButton" id="player1MainOption1Button">Stop</button>
+							<button class="playerMainButton" id="player1MainOption1Button">Reset</button>
+						</div>
+						<div>
+							Time left: <p id="player1MainOption1TimeLeft">00:00:00</p>
+							Fastest lap: <p id="player1MainOption1FastestLap">00:00:00</p>
+						</div>
+						<div>
+							History:
+							<div id="player1MainOption1History">
+								<p>3. 00:00:00</p>
+								<p>2. 00:00:00</p>
+								<p>1. 00:00:00</p>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+			<div class="bottom">
+				<div>
+					<p id="lapTime">00:00:00</p>
+				</div>
+			</div>
+	</div>
 	</div>
 </body>
-<style>
-	.tracker {
-		margin: 0 auto;
-		margin-bottom: 50px;
-		border: 1px solid #fff;
-		width: 100%;
-	}
-
-	h1[name="countdown"] {
-		font-size: 100px;
-		text-align: center;
-		display: none;
-	}
-
-	h1[name="winner"] {
-		font-size: 50px;
-		text-align: center;
-		margin-bottom: 25px;
-		color: gold;
-		display: none;
-	}
-
-	input[class="name"] {
-		font-size: 30px;
-		text-align: center;
-		width: 100%;
-		margin-bottom: 25px;
-		background-color: transparent;
-		border: none;
-		color: #fff;
-	}
-
-	.trackerContainer {
-		display: flex;
-		justify-content: center;
-		gap: 50px;
-	}
-
-	.trackerContainerLaps {
-		display: flex;
-		flex-direction: column;
-		width: 50%;
-	}
-
-	div[name="settings"] {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 25px;
-		flex-direction: column;
-		gap: 10px;
-	}
-
-	div[name="buttons"] {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 25px;
-		flex-direction: row;
-		gap: 10px;
-	}
-
-	input {
-		padding: 10px;
-		font-size: 20px;
-		border-radius: 5px;
-		border: none;
-		margin-right: 10px;
-	}
-
-	body {
-		background-color: #1a1a1a;
-		color: #fff;
-		font-family: Arial, Helvetica, sans-serif;
-		font-size: 20px;
-		margin: 0;
-		padding: 0;
-	}
-
-	table {
-		border-collapse: collapse;
-		width: 100%;
-	}
-
-	th,
-	td {
-		padding: 8px;
-		text-align: center;
-		border-bottom: 1px solid #ddd;
-		width: 50%;
-	}
-
-	p[name="currentTime"] {
-		font-size: 30px;
-		text-align: center;
-
-	}
-
-	div[name="flexBox"] {
-		display: flex;
-		justify-content: center;
-		height: 100vh;
-		width: 100vw;
-	}
-
-	div[name="flexMiddle"] {
-		display: flex;
-		flex-direction: column;
-		height: 100vh;
-		width: 100vw;
-		margin-left: 50px;
-		margin-right: 50px;
-	}
-
-	div[name="middleTop"] {
-		text-align: center;
-	}
-
-	div[name="middleBot"] {
-		display: flex;
-		justify-content: center;
-		margin: 50px;
-	}
-
-	h1 {
-		font-size: 50px;
-	}
-
-	a {
-		color: #fff;
-	}
-
-	a:hover {
-		color: #fff;
-		text-decoration: underline;
-	}
-
-	a[name="mainLink"] {
-		background-color: #fff;
-		color: #000;
-		padding: 10px 20px;
-		border-radius: 5px;
-		text-decoration: none;
-		font-size: 20px;
-	}
-
-	button {
-		background-color: #fff;
-		color: #000;
-		padding: 10px 20px;
-		border-radius: 5px;
-		text-decoration: none;
-		font-size: 20px;
-		margin: 0 10px;
-	}
-</style>
-
-<script>
-	var startButton = document.querySelector('button[name="startButton"]');
-	var resetButton = document.querySelector('button[name="resetButton"]');
-	var stopButton = document.querySelector('button[name="stopButton"]');
-	var start5Button = document.querySelector('button[name="start5Button"]');
-	var newLapButton = document.querySelector('button[name="newLapButton"]');
-
-	var lapsCountInput = document.querySelector('input[name="lapsCount"]');
-	var leftName = document.querySelector('input[name="nameLeft"]');
-	var rightName = document.querySelector('input[name="nameRight"]');
-
-	var countdown = document.querySelector('h1[name="countdown"]');
-	var currentTime = document.querySelector('span[name="currentTime"]');
-	var winner = document.querySelector('h1[name="winner"]')
-
-	var lapsLeftDiv = document.querySelector('tbody[name="lapsLeft"]');
-	var lapsRightDiv = document.querySelector('tbody[name="lapsRight"]');
-
-	var isWinner = false;
-	var timer = 0;
-	var isPaused = true;
-	var lapsLeft = [];
-	var lapsRight = [];
-
-	newLapButton.addEventListener("click", function () {
-		insertLap("left");
-		insertLap("right");
-	});
-
-	var newLap = function (lapSide, type) {
-		var lap = document.createElement("tr");
-		var lapNumber = document.createElement("td");
-		var lapTime = document.createElement("td");
-
-		var lapCounter = lapSide === "left" ? lapsLeft : lapsRight;
-		if (type === "fastest") {
-			// Get lowest diff between laps
-			var lowestTime = lapCounter[0];
-			for (var i = 1; i < lapCounter.length; i++) {
-				var diff = Number(lapCounter[i])- Number(lapCounter[i - 1]);
-				if (diff < lowestTime) {
-					lowestTime = diff;
-				}
-			}
-
-			console.log("lowestTime", lowestTime)
-			console.log("lapCounter", lapCounter)
-
-			lapNumber.innerHTML = "Fastest";
-			lapTime.innerHTML = timeFormat(lowestTime);
-			
-			lap.style.backgroundColor = "#00ff00";
-			lap.style.color = "#000";
-
-			lap.appendChild(lapNumber);
-			lap.appendChild(lapTime);
-
-			return lap;
-		}
-
-		lapNumber.innerHTML = lapCounter.length + 1;
-		lapTime.innerHTML = timeFormat(timer);
-		lapCounter.push(timer)
-
-		lap.appendChild(lapNumber);
-		lap.appendChild(lapTime);
-
-
-		if (lapCounter.length % 2 == 0) {
-			// Light gray
-			lap.style.backgroundColor = "#ddd";
-			lap.style.color = "#000";
-		}
-
-		if (Number(lapsCountInput.value) == lapCounter.length) {
-			lap.style.backgroundColor = "#ff0000";
-			lap.style.color = "#fff";
-		}
-
-		return lap;
-	};
-
-	var insertLap = function (lapSide) {
-		var lapCounter = lapSide === "left" ? lapsLeft : lapsRight;
-		var lapDiv = lapSide === "left" ? lapsLeftDiv : lapsRightDiv;
-
-		if (Number(lapsCountInput.value) <= lapCounter.length) {
-			return;
-		}
-		lapDiv.appendChild(newLap(lapSide));
-
-		if (Number(lapsCountInput.value) <= lapCounter.length) {
-			if (!isWinner) {
-				console.log("LAPS SIDE:", lapSide)
-				var winnerName = lapSide === "left" ? leftName.value : rightName.value;
-				winner.innerHTML = winnerName;
-				winner.style.display = 'block';
-				isWinner = true;
-			}
-			else {
-				isPaused = true;
-			}
-			lapDiv.appendChild(newLap(lapSide, "fastest"));
-		}
-	};
-
-	var timeLoop = setInterval(function () {
-		if (!isPaused) {
-			// Parse time to minutes, seconds and milliseconds 00:00:000
-			timer += 5;
-			currentTime.innerHTML = timeFormat(timer);
-		}
-	}, 5);
-
-	// Start timer after 5 seconds, while show countdown
-	start5Button.addEventListener("click", function () {
-		countdownTimer = 5000;
-		countdown.innerHTML = countdownTimer / 1000;
-		countdown.style.display = "block";
-		var countdownLoop = setInterval(function () {
-			countdownTimer -= 1000;
-			countdown.innerHTML = countdownTimer / 1000;
-			if (countdownTimer == 0) {
-				clearInterval(countdownLoop);
-				countdown.style.display = "none";
-				isPaused = false;
-			}
-		}, 1000);
-	});
-
-	startButton.addEventListener("click", function () {
-		isPaused = false;
-	});
-
-	resetButton.addEventListener("click", function () {
-		timer = 0;
-		currentTime.innerHTML = "00:00:000";
-		isPaused = true;
-		lapsLeft = [];
-		lapsRight = [];
-		lapsLeftDiv.innerHTML = "";
-		lapsRightDiv.innerHTML = "";
-		winner.style.display = 'none'
-	});
-
-	// Pause timer
-	stopButton.addEventListener("click", function () {
-		isPaused = true;
-	});
-
-	// Format time to minutes, seconds and milliseconds 00:00:000 if needed add 0
-	var timeFormat = function (time) {
-		var minutes = Math.floor(time / 60000);
-		var seconds = Math.floor((time - minutes * 60000) / 1000);
-		var milliseconds = time - minutes * 60000 - seconds * 1000;
-
-		if (minutes < 10) minutes = "0" + minutes;
-		if (seconds < 10) seconds = "0" + seconds;
-		if (milliseconds < 10) milliseconds = "00" + milliseconds;
-		else if (milliseconds < 100) milliseconds = "0" + milliseconds;
-
-		return minutes + ":" + seconds + ":" + milliseconds;
-	};
-
-	if (!!window.EventSource) {
-		console.log("Start event source!");
-		var source = new EventSource('/events');
-	}
-
-	source.addEventListener('hello', function (e) {
-		console.log("hello");
-	}, false);
-
-	source.addEventListener('newReadings', function (e) {
-		// console.log("newReadings ", e.data);
-		newReading(JSON.parse(e.data));
-	}, false);
-
-	source.addEventListener('open', function (e) {
-		console.log("Events Connected");
-	}, false);
-
-	source.addEventListener('error', function (e) {
-		if (e.target.readyState != EventSource.OPEN) {
-			console.log("Events Disconnected");
-		}
-	}, false);
-
-	source.addEventListener('message', function (e) {
-		console.log("message", e.data);
-	}, false);
-
-	// ----------------------------------- //
-	var calibrateEmptyMin = 0;
-	var calibrateEmptyMax = 0;
-
-	var in1Triggered = true;
-	var in2Triggered = true;
-
-	var calibrateEmptyButton = document.querySelector('button[name="calibrateEmptyButton"]');
-	var calibrateOffset = document.querySelector('input[name="calibrateOffset"]').value;
-	var calibrateEmptyMinInput = document.querySelector('input[name="calibrateEmptyMin"]');
-	var calibrateEmptyMaxInput = document.querySelector('input[name="calibrateEmptyMax"]');
-
-	var latestData = { AN_In1: 0, AN_In2: 0 };
-
-	var newReading = function (data) {
-		latestData = data;
-		if (calibrateEmptyMax === 0 || calibrateEmptyMin === 0 || isPaused) return;
-
-		if (data.AN_In1 > calibrateEmptyMax || data.AN_In1 < calibrateEmptyMin) {
-			if (!in1Triggered) {
-				console.log("AN_In1 trigged left", data.AN_In1, calibrateEmptyMax, calibrateEmptyMin);
-				in1Triggered = true;
-				insertLap("left");
-			}
-		}
-		else {
-			in1Triggered = false;
-		}
-
-		if (data.AN_In2 > calibrateEmptyMax || data.AN_In2 < calibrateEmptyMin) {
-			if (!in2Triggered) {
-				console.log("AN_In2 trigged right", data.AN_In2, calibrateEmptyMax, calibrateEmptyMin);
-				in2Triggered = true;
-				insertLap("right");
-			}
-		}
-		else {
-			in2Triggered = false;
-		}
-	}
-
-	calibrateEmptyButton.addEventListener("click", function () {
-		calibrateOffset = document.querySelector('input[name="calibrateOffset"]').value;
-		console.log("calibrateEmpty", latestData);
-		calibrateEmptyMin = latestData.AN_In1 > latestData.AN_In2 ? latestData.AN_In2 : latestData.AN_In1;
-		calibrateEmptyMax = latestData.AN_In1 < latestData.AN_In2 ? latestData.AN_In2 : latestData.AN_In1;
-		calibrateEmptyMin = Number(calibrateEmptyMin) - Number(calibrateOffset);
-		calibrateEmptyMax = Number(calibrateEmptyMax) + Number(calibrateOffset);
-
-		calibrateEmptyMinInput.value = calibrateEmptyMin;
-		calibrateEmptyMaxInput.value = calibrateEmptyMax;
-	});
-
-</script>
+<script src="tracker.js"></script>
 
 </html>

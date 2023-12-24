@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+    <title>LapTracker</title>
+</head>
+
+<body>
+    <div name="flexBox">
+        <div name="top">
+            <h1>🚗 LapTracker</h1>
+        </div>
+        <div name="middle">
+            <div>
+                <label for="ssid">SSID:</label>
+                <input type="text" id="ssid" name="ssid" value="LapTracker">
+
+                <label for="password">Password:</label>
+                <input type="text" id="password" name="password" value="12345678">
+
+                <button onclick="saveWifiSettingsFile()">Save & Restart</button>
+            </div>
+
+        </div>
+</body>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #fff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        margin: 0;
+        padding: 0;
+    }
+
+    div[name="flexBox"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        flex-direction: column;
+    }
+
+    div[name="middle"] {
+        text-align: center;
+    }
+
+    div[name="top"] {
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: #1a1a1a;
+        padding: 20px;
+        text-align: center;
+    }
+
+    h1 {
+        font-size: 50px;
+    }
+
+    a {
+        color: #fff;
+    }
+
+    a:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    a[name="mainLink"] {
+        background-color: #fff;
+        color: #000;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 20px;
+    }
+</style>
+<script src="settings.js"></script>
+</html>
