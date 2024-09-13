@@ -10,61 +10,73 @@
 </head>
 
 <body>
-	<div class="horizontalBox">
-		<di class="verticalBox">
-			<div class="top">
-				<h1>🚗 LapTracker</h1>
-				<div>
-					<input type="radio" id="players" name="players" value="1" checked>
-					<label for="players">1 Player</label><br>
-					<input type="radio" id="players" name="players" value="2">
-					<label for="players">2 Players</label><br>
+	<div class="flexBoxColumn">
+		<div class="flexBoxRow">
+			<div id="timer">00:00:00.000</div>
+		</div>
+
+		<div id="countdownModal" class="modal">
+			<div class="modal-content">
+				<div class="lights">
+					<div class="light" id="light1"></div>
+					<div class="light" id="light2"></div>
+					<div class="light" id="light3"></div>
+					<div class="light" id="light4"></div>
+					<div class="light" id="light5"></div>
 				</div>
 			</div>
-			<div class="middle">
-				<div class="player" id="player1">
-					<div class="playerName">
-						<input class="playerNameInput" type="text" id="player1Name" name="player1Name" value="Player 1">
-					</div>
-					<div class="playerButtons">
-						<select class="playerPlayTypeSelect" id="player1PlayType">
-							<option class="option" value="1">Kvalifikace čas</option>
-							<option class="option" value="2">Kvalifikace kola</option>
-							<option class="option" value="3">Závod kola</option>
-						</select>
-					</div>
-					<div class="playerMain" id="player1MainOption1">
-						<div class="playerMainOptions">
-							<input class="playerMainInput" type="text" id="player1MainOption1Input" name="player1MainOption1Input" value="00:00:00">
-						</div>
-						<div>
-							<button class="playerMainButton" id="player1MainOption1Button">Start</button>
-							<button class="playerMainButton" id="player1MainOption1Button">Stop</button>
-							<button class="playerMainButton" id="player1MainOption1Button">Reset</button>
-						</div>
-						<div>
-							Time left: <p id="player1MainOption1TimeLeft">00:00:00</p>
-							Fastest lap: <p id="player1MainOption1FastestLap">00:00:00</p>
-						</div>
-						<div>
-							History:
-							<div id="player1MainOption1History">
-								<p>3. 00:00:00</p>
-								<p>2. 00:00:00</p>
-								<p>1. 00:00:00</p>
-							</div>
-						</div>
-					</div>
-				</div>
+		</div>
+
+		<div id="winnerModal" class="modal">
+			<div class="flexBoxColumn">
+				<div id="winnerText">Winner</div>
 			</div>
-			<div class="bottom">
-				<div>
-					<p id="lapTime">00:00:00</p>
-				</div>
+		</div>
+
+		<div class="flexBoxRow">
+			<table id="timeTableOne" title="Player 1">
+				<caption>Player 1</caption>
+				<tr>
+					<th>Round</th>
+					<th>Time</th>
+					<th>Lap time</th>
+				</tr>
+			</table>
+			<table id="timeTableTwo" title="Player 2">
+				<caption>Player 2</caption>
+				<tr>
+					<th>Round</th>
+					<th>Time</th>
+					<th>Lap time</th>
+				</tr>
+			</table>
+		</div>
+
+		<div class="flexBoxRow">
+			<button id="startButton" onclick="startTimer()">Start</button>
+			<button id="startDelayedButton" onclick="startDelayedTimer()">Start Delayed 5s</button>
+			<button id="stopButton" onclick="stopTimer()">Stop</button>
+			<button id="resetButton" onclick="resetTimer()">Reset</button>
+		</div>
+
+		<div class="flexBoxRow">
+			<div>
+				Mode:
+				<input type="radio" id="mode" name="mode" value="time" checked> Timed laps
+				<input type="radio" id="mode" name="mode" value="laps"> Laps
 			</div>
-	</div>
+			<div>
+				TimeLimit:
+				<input type="number" id="timeLimitMinutes" value="0" min="0" max="59">m
+				<input type="number" id="timeLimitSeconds" value="60" min="1" max="3600">s
+			</div>
+			<div>
+				Laps: <input type="number" id="lapsLimit" value="3" min="1" max="100">
+			</div>
+		</div>
 	</div>
 </body>
+
 <script src="tracker.js"></script>
 
 </html>
