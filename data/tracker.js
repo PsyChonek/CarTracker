@@ -47,6 +47,8 @@ var elapsedTime = 0;
 
 // Timer Logic
 function startTimer() {
+	resetTimer();
+
 	startTime = Date.now() - elapsedTime;
 	timerInterval = setInterval(() => {
 		elapsedTime = Date.now() - startTime;
@@ -89,15 +91,8 @@ function startDelayedTimer() {
 		// Once countdown reaches 0, turn off all lights
 		if (countdownValue < 0) {
 			clearInterval(countdownInterval);
-
-			// Flash all lights off briefly
-			lights.forEach((light) => light.classList.remove("on"));
-
-			setTimeout(() => {
-				// Hide the modal and start the timer after a brief delay
-				document.getElementById("countdownModal").style.display = "none";
-				startTimer(); // Start the actual timer
-			}, 500);
+			document.getElementById("countdownModal").style.display = "none";
+			startTimer(); // Start the actual timer
 		}
 	}, 1000);
 }
@@ -140,35 +135,39 @@ var checkEndGame = function () {
 
 		if (elapsedTime >= (minutes * 60 + seconds) * 1000) {
 			stopTimer();
+			let lapTimes = [];
 
-           // Calculate lap times starting from 0
-            let lapTimes = [];
-            lapTimes.push(playerOne[0]);
-            for (let i = 1; i < playerOne.length; i++) {
-                let delta = playerOne[i] - playerOne[0]; // Subtracting the start time
-                lapTimes.push(delta);
-            }
+			// Calculate lap times starting from 0
+			if (playerOne.length != 0) {
+				lapTimes.push(playerOne[0]);
+				for (let i = 1; i < playerOne.length; i++) {
+					let delta = playerOne[i] - playerOne[0]; // Subtracting the start time
+					lapTimes.push(delta);
+				}
+				playerOneFastest = Math.min(...lapTimes);
+			} else {
+				playerOneFastest = Number.MAX_VALUE;
+			}
 
-            playerOneFastest = Math.min(...lapTimes);
+			if (playerTwo.length != 0) {
+				lapTimes = [];
+				lapTimes.push(playerTwo[0]);
+				for (let i = 1; i < playerTwo.length; i++) {
+					let delta = playerTwo[i] - playerTwo[0]; // Subtracting the start time
+					lapTimes.push(delta);
+				}
+				playerTwoFastest = Math.min(...lapTimes);
+			} else {
+				playerTwoFastest = Number.MAX_VALUE;
+			}
 
-            lapTimes = [];
-            lapTimes.push(playerTwo[0]);
-            for (let i = 1; i < playerTwo.length; i++) {
-                let delta = playerTwo[i] - playerTwo[0]; // Subtracting the start time
-                lapTimes.push(delta);
-            }
-
-            playerTwoFastest = Math.min(...lapTimes);
-
-            if (playerOneFastest < playerTwoFastest) {
-                showWinnerModal("Player 1 - Fastest Lap: " + timeToString(playerOneFastest));
-            }
-            else if (playerTwoFastest < playerOneFastest) {
-                showWinnerModal("Player 2 - Fastest Lap: " + timeToString(playerTwoFastest));
-            }
-            else {
-                showWinnerModal("Tie - Fastest Lap: " + timeToString(playerOneFastest));
-            }
+			if (playerOneFastest < playerTwoFastest) {
+				showWinnerModal("Player 1 - Fastest Lap: " + timeToString(playerOneFastest));
+			} else if (playerTwoFastest < playerOneFastest) {
+				showWinnerModal("Player 2 - Fastest Lap: " + timeToString(playerTwoFastest));
+			} else {
+				showWinnerModal("Tie - Fastest Lap: " + timeToString(playerOneFastest));
+			}
 		}
 	}
 
@@ -218,21 +217,19 @@ function addToTable(tableId, round, time) {
 	let row = table.insertRow();
 	let cellRound = row.insertCell(0);
 	let cellTime = row.insertCell(1);
-    let cellTimeDiff = row.insertCell(2);
+	let cellTimeDiff = row.insertCell(2);
 
 	cellRound.textContent = round;
 	cellTime.textContent = timeToString(time);
-    if (round > 1) {
-        if (tableId == "timeTableOne") {
-            cellTimeDiff.textContent = timeToString(playerOne[playerOne.length - 1] - playerOne[playerOne.length - 2]);
-        }
-        else {
-            cellTimeDiff.textContent = timeToString(playerTwo[playerTwo.length - 1] - playerTwo[playerTwo.length - 2]);
-        }
-    }
-    else {
-        cellTimeDiff.textContent = timeToString(time)
-    }
+	if (round > 1) {
+		if (tableId == "timeTableOne") {
+			cellTimeDiff.textContent = timeToString(playerOne[playerOne.length - 1] - playerOne[playerOne.length - 2]);
+		} else {
+			cellTimeDiff.textContent = timeToString(playerTwo[playerTwo.length - 1] - playerTwo[playerTwo.length - 2]);
+		}
+	} else {
+		cellTimeDiff.textContent = timeToString(time);
+	}
 }
 
 // Clear table rows except headers
@@ -267,5 +264,5 @@ document.getElementById("stopButton").disabled = true;
 
 //Click anywhere to close winner modal
 document.getElementById("winnerModal").addEventListener("click", function () {
-    document.getElementById("winnerModal").style.display = "none";
+	document.getElementById("winnerModal").style.display = "none";
 });
