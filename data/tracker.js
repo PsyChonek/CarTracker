@@ -1,42 +1,60 @@
 if (!!window.EventSource) {
 	console.log("Start event source!");
 	var source = new EventSource("/events");
+
+	// Add reconnection logic when an error occurs
+	source.onerror = function (e) {
+		console.error("EventSource failed: ", e);
+		if (e.target.readyState === EventSource.CLOSED) {
+			console.log("Reconnecting to EventSource...");
+			// Try reconnecting after 5 seconds
+			setTimeout(() => {
+				source = new EventSource("/events");
+				addEventListeners(source);
+			}, 5000);
+		}
+	};
 }
 
-source.addEventListener(
-	"newReadings",
-	function (e) {
-		console.log("newReadings ", e.data);
-		newReading(JSON.parse(e.data));
-	},
-	false
-);
+function addEventListeners(source) {
+	source.addEventListener(
+		"newReadings",
+		function (e) {
+			console.log("newReadings ", e.data);
+			newReading(JSON.parse(e.data));
+		},
+		false
+	);
 
-source.addEventListener(
-	"open",
-	function (e) {
-		console.log("Events Connected");
-	},
-	false
-);
+	source.addEventListener(
+		"open",
+		function (e) {
+			console.log("Events Connected");
+		},
+		false
+	);
 
-source.addEventListener(
-	"error",
-	function (e) {
-		if (e.target.readyState != EventSource.OPEN) {
-			console.log("Events Disconnected");
-		}
-	},
-	false
-);
+	source.addEventListener(
+		"error",
+		function (e) {
+			if (e.target.readyState != EventSource.OPEN) {
+				console.log("Events Disconnected");
+			}
+		},
+		false
+	);
 
-source.addEventListener(
-	"message",
-	function (e) {
-		console.log("message", e.data);
-	},
-	false
-);
+	source.addEventListener(
+		"message",
+		function (e) {
+			console.log("message", e.data);
+		},
+		false
+	);
+}
+
+// Initialize event listeners
+addEventListeners(source);
 
 var playerOne = [];
 var playerTwo = [];
@@ -44,6 +62,8 @@ var readings = [];
 var timerInterval;
 var startTime;
 var elapsedTime = 0;
+var ignoreAfterStartDelay;
+var players = 2;
 
 // Timer Logic
 function startTimer() {
@@ -128,39 +148,37 @@ function showWinnerModal(winner) {
 var checkEndGame = function () {
 	// Get the selected radio button value for "mode"
 	var selectedMode = document.querySelector('input[name="mode"]:checked').value;
-
 	if (selectedMode == "time") {
 		var seconds = document.getElementById("timeLimitSeconds").value;
 		var minutes = document.getElementById("timeLimitMinutes").value;
 
 		if (elapsedTime >= (minutes * 60 + seconds) * 1000) {
 			stopTimer();
-			let lapTimes = [];
 
-			// Calculate lap times starting from 0
-			if (playerOne.length != 0) {
-				lapTimes.push(playerOne[0]);
+			let playerOneFastest = Number.MAX_VALUE; // Declare the variable before the logic
+			let playerTwoFastest = Number.MAX_VALUE; // Declare the variable before the logic
+
+			// Calculate fastest lap for player one
+			if (playerOne.length > 1) {
 				for (let i = 1; i < playerOne.length; i++) {
-					let delta = playerOne[i] - playerOne[0]; // Subtracting the start time
-					lapTimes.push(delta);
+					let lapTime = playerOne[i] - playerOne[i - 1]; // Time between consecutive laps
+					if (lapTime < playerOneFastest) {
+						playerOneFastest = lapTime;
+					}
 				}
-				playerOneFastest = Math.min(...lapTimes);
-			} else {
-				playerOneFastest = Number.MAX_VALUE;
 			}
 
-			if (playerTwo.length != 0) {
-				lapTimes = [];
-				lapTimes.push(playerTwo[0]);
+			// Calculate fastest lap for player two
+			if (playerTwo.length > 1) {
 				for (let i = 1; i < playerTwo.length; i++) {
-					let delta = playerTwo[i] - playerTwo[0]; // Subtracting the start time
-					lapTimes.push(delta);
+					let lapTime = playerTwo[i] - playerTwo[i - 1]; // Time between consecutive laps
+					if (lapTime < playerTwoFastest) {
+						playerTwoFastest = lapTime;
+					}
 				}
-				playerTwoFastest = Math.min(...lapTimes);
-			} else {
-				playerTwoFastest = Number.MAX_VALUE;
 			}
 
+			// Determine the winner
 			if (playerOneFastest < playerTwoFastest) {
 				showWinnerModal("Player 1 - Fastest Lap: " + timeToString(playerOneFastest));
 			} else if (playerTwoFastest < playerOneFastest) {
@@ -191,23 +209,53 @@ var checkEndGame = function () {
 	}
 };
 
+var coolDownPlayerOne = 0;
+var coolDownPlayerTwo = 0;
+
 // Handle new reading
 var newReading = function (data) {
-	readings.push(data);
+	ignoreAfterStartDelay = document.getElementById("ignoreAfterStartDelay").value;
 
-	// Check for AN_In1 and AN_In2, update corresponding tables
-	if (data.AN_In1) {
-		var time = Date.now() - startTime;
-		playerOne.push(time);
-
-		addToTable("timeTableOne", playerOne.length, time);
+	// Ignore readings for the first seconds after start
+	if (Date.now() - startTime < ignoreAfterStartDelay) {
+		return;
 	}
 
-	if (data.AN_In2) {
-		var time = Date.now() - startTime;
-		playerTwo.push(time);
+	console.log(data);
 
-		addToTable("timeTableTwo", playerTwo.length, time);
+	// Check for inputPin1 and inputPin2, update corresponding tables
+	if (data.inputPin1 || (data.inputPin2 && players == 1)) {
+		var time = Date.now() - startTime;
+
+		if (isNaN(time)) {
+			alert("Timer is not running");
+			return;
+		}
+
+		// Only if time is more that 500ms
+		if (Date.now() - coolDownPlayerOne > 500) {
+			playerOne.push(time);
+			readings.push(data);
+			coolDownPlayerOne = Date.now();
+			addToTable("timeTableOne", playerOne.length, time);
+		}
+	}
+
+	if (data.inputPin2 && players == 2) {
+		var time = Date.now() - startTime;
+
+		if (isNaN(time)) {
+			alert("Timer is not running");
+			return;
+		}
+
+		// Only if time is more that 500ms
+		if (Date.now() - coolDownPlayerTwo > 500) {
+			playerTwo.push(time);
+			readings.push(data);
+			coolDownPlayerTwo = Date.now();
+			addToTable("timeTableTwo", playerTwo.length, time);
+		}
 	}
 };
 
@@ -265,4 +313,17 @@ document.getElementById("stopButton").disabled = true;
 //Click anywhere to close winner modal
 document.getElementById("winnerModal").addEventListener("click", function () {
 	document.getElementById("winnerModal").style.display = "none";
+});
+
+document.getElementById("players").addEventListener("change", function () {
+	const selectedPlayer = document.querySelector('input[name="players"]:checked').value;
+	if (selectedPlayer === "1") {
+		document.getElementById("timeTableOne").style.display = "table";
+		document.getElementById("timeTableTwo").style.display = "none";
+		players = 1;
+	} else {
+		document.getElementById("timeTableOne").style.display = "table";
+		document.getElementById("timeTableTwo").style.display = "table";
+		players = 2;
+	}
 });

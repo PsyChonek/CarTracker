@@ -60,20 +60,28 @@
 		</div>
 
 		<div class="flexBoxRow">
-			<div>
+			<div class="row">
 				Mode:
 				<input type="radio" id="mode" name="mode" value="time" checked> Timed laps
 				<input type="radio" id="mode" name="mode" value="laps"> Laps
 			</div>
-			<div>
+			<div class="row">
 				TimeLimit:
 				<input type="number" id="timeLimitMinutes" value="0" min="0" max="59">m
 				<input type="number" id="timeLimitSeconds" value="60" min="1" max="3600">s
 			</div>
-			<div>
+			<div class="row">
 				Laps: <input type="number" id="lapsLimit" value="3" min="1" max="100">
 			</div>
-		</div>
+			<div class="row">
+				First input delay: <input type="number" id="ignoreAfterStartDelay" value="5000" min="0">ms
+			</div>
+			<div class="row">
+				Players <div id="players">
+					<input type="radio" id="playersOne" name="players" value="1"> 1
+					<input type="radio" id="playersTwo" name="players" value="2" checked> 2
+				</div>
+			</div>
 	</div>
 </body>
 

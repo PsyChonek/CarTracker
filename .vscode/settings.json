@@ -12,5 +12,8 @@
         "string_view": "cpp",
         "initializer_list": "cpp",
         "regex": "cpp"
-    }
+    },
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
 }

@@ -22,6 +22,8 @@ body {
     justify-content: space-between;
     width: 80%;
     margin: 10px 0;
+	flex-wrap: wrap;
+	gap: 2rem;
 }
 
 /* Modal styling for F1 lights */
@@ -201,4 +203,14 @@ div {
     button {
         width: 100%;
     }
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+	flex-wrap: nowrap;
+	align-items: baseline;
 }
